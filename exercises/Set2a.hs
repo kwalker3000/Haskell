@@ -171,4 +171,3 @@ addEithers  (Right a) (Right b) = Right $ a+b
 addEithers  (Left a)         _  = Left a
 addEithers   _        (Left b)  = Left b
 
---addEithers a b = todo
