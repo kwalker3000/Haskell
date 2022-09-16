@@ -195,7 +195,7 @@ bomb x = Right (x-1)
 -- Hint! This is a great use for list comprehensions
 
 joinToLength :: Int -> [String] -> [String]
-joinToLength = todo
+joinToLength n xs = [x++y | y <- xs, x <- xs, length (x++y) == n]
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the operator +|+ that returns a list with the first
@@ -208,6 +208,12 @@ joinToLength = todo
 --   [1,2,3] +|+ [4,5,6]  ==> [1,4]
 --   [] +|+ [True]        ==> [True]
 --   [] +|+ []            ==> []
+
+(+|+) :: [a] -> [a] -> [a]
+[] +|+ [] = []
+xs +|+ [] = head xs : []  
+[] +|+ ys = head ys : []
+xs +|+ ys = (head xs) : (head ys) : []
 
 
 ------------------------------------------------------------------------------
