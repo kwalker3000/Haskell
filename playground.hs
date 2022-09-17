@@ -41,10 +41,14 @@ countAWords :: String -> Int
 countAWords string = length (filter startsWithA (words string))
   where startsWithA s = head s == 'a'
 
-abs' :: Num a => [a] -> a
+abs' :: Int -> Int
 abs' x
   | x >= 0    = x
   | otherwise = (-x)
 
-myFunc :: Integer -> Integer -> [Integer]
-myFunc start end = map (\x -> abs' x) [start..end]
+
+cartesianProduct :: [a] -> [a] -> [(a,a)]
+cartesianProduct xs ys = [(x, y) | x <- xs, y <- ys]
+
+(*!) :: [a] -> [a] -> [(a, a)]
+xs *! ys = cartesianProduct xs ys
