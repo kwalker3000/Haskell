@@ -52,3 +52,35 @@ cartesianProduct xs ys = [(x, y) | x <- xs, y <- ys]
 
 (*!) :: [a] -> [a] -> [(a, a)]
 xs *! ys = cartesianProduct xs ys
+
+mytest :: String -> String
+--mytest [] = False
+mytest (x:xs) 
+ | x == '(' || x == '[' || x == '{'  = x : mytest xs ++ []
+ | otherwise                         = x : []
+
+
+-- | x == ')' || x == ']' || x == '}'  = x : []
+
+isBalanced [] = "empty"
+isBalanced [_] = "one element"
+--isBalanced xs = isBalanced $ (init . init) (mytest xs)
+isBalanced xs = (mytest xs)
+
+getOps :: String -> String
+getOps xs = filter isOps xs
+  
+isOps :: Char -> Bool
+isOps x = case x of
+  '(' -> True
+  ')' -> True
+  '[' -> True
+  ']' -> True
+  '{' -> True
+  '}' -> True
+  _   -> False
+
+isPair :: String -> Bool
+isPair xs
+  | xs == "()" || xs == "[]" || xs == "{}" = True
+  | otherwise                              = False

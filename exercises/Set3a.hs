@@ -171,7 +171,8 @@ while check update value
 -- Hint! Remember the case-of expression from lecture 2.
 
 whileRight :: (a -> Either b a) -> a -> b
-whileRight check x = todo
+whileRight check x = case check x of (Left x) -> x
+                                     (Right x) -> whileRight check x
 
 -- for the whileRight examples:
 -- step k x doubles x if it's less than k
@@ -247,9 +248,13 @@ sumRights xs = (sum . rights) xs
 --   multiCompose [(3*), (2^), (+1)] 0 ==> 6
 --   multiCompose [(+1), (2^), (3*)] 0 ==> 2
 
+multiCompose :: [ (a -> a) ] -> a -> a
 multiCompose [] x = x
 multiCompose fs x = multiCompose (init fs) $ (last fs) x
 
+-- init :: [a] -> [a]
+-- last :: [a] -> a
+-- fs :: ([a] -> a -> a)
 ------------------------------------------------------------------------------
 -- Ex 13: let's consider another way to compose multiple functions. Given
 -- some function f, a list of functions gs, and some value x, define
@@ -271,8 +276,8 @@ multiCompose fs x = multiCompose (init fs) $ (last fs) x
 
 multiApp = todo
 
-------------------------------------------------------------------------------
--- Ex 14: in this exercise you get to implement an interpreter for a
+--------------------------------------------------------
+-- 14: in this exercise you get to implement an interpreter for a
 -- simple language. You should keep track of the x and y coordinates,
 -- and interpret the following commands:
 --
@@ -304,4 +309,16 @@ multiApp = todo
 -- function, the surprise won't work.
 
 interpreter :: [String] -> [String]
-interpreter commands = todo
+interpreter commands = interpreter' commands 0 0
+
+interpreter' :: [String] -> Integer -> Integer -> [String]
+interpreter'  [] x y = [] 
+interpreter' ("printX" : cs) x y = show x : interpreter' cs x y
+interpreter' ("printY" : cs) x y = show y : interpreter' cs x y
+interpreter' (c : cs) x y
+  | c == "right"  = interpreter' cs (x+1) y
+  | c == "left"   = interpreter' cs (x-1) y
+  | c == "up"     = interpreter' cs x (y+1)
+  | c == "down"   = interpreter' cs x (y-1)
+  | otherwise     = interpreter' cs x y
+  
