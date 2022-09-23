@@ -51,12 +51,11 @@ buildList start count end = start : buildList start (count-1) end
 
 sums :: Int -> [Int]
 sums 0 = []
-sums i = i * (div (1 + i) 2) : sums (i - 1)
---sums i = [ x | x <- [1..i]]
+sums i = swap ((div (i * (1 + i)) 2) : sums (i - 1)) 
 
---reverse :: [Int] -> [Int]
---reverse (x:[]) = x
---reverse xs = [ x | x <- xs]
+swap :: [Int] -> [Int]
+swap [x] = [x]
+swap (x:y:ss) = y : swap (x:ss)
 
 ------------------------------------------------------------------------------
 -- Ex 3: define a function mylast that returns the last value of the
@@ -169,15 +168,10 @@ merge (x:xs) (y:ys)
 --     ==> [1,2]
 
 mymaximum :: (a -> a -> Bool) -> a -> [a] -> a
-mymaximum = todo
--- mymaximum bigger initial [] = initial
--- mymaximum bigger initial [x]
---   | bigger initial x   = x
---   | otherwise          = initial
--- mymaximum bigger initial (x:xs)
---   | bigger initial x   = x
---   | otherwise          = mymaximum bigger initial xs
-
+mymaximum bigger initial [] = initial
+mymaximum bigger initial (x:xs)
+  | bigger initial x   = mymaximum bigger initial xs
+  | otherwise          = mymaximum bigger x xs
 
 ------------------------------------------------------------------------------
 -- Ex 9: define a version of map that takes a two-argument function
@@ -217,4 +211,7 @@ map2 f (a:as) (b:bs) = f a b : map2 f as bs
 --   ==> []
 
 maybeMap :: (a -> Maybe b) -> [a] -> [b]
-maybeMap f xs = todo
+maybeMap f [] = []
+maybeMap f (x:xs) = case f x of (Just x) -> x : maybeMap f xs
+                                (Nothing) -> maybeMap f xs
+
