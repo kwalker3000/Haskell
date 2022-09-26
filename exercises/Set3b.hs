@@ -70,8 +70,7 @@ swap (x:y:ss) = y : swap (x:ss)
 
 mylast :: a -> [a] -> a
 mylast def [] = def
-mylast def (x:[]) = x
-mylast def (x:xs) = mylast def xs 
+mylast _ (x:xs) = mylast x xs 
 
 ------------------------------------------------------------------------------
 -- Ex 4: safe list indexing. Define a function indexDefault so that
@@ -139,9 +138,8 @@ sumsOf (x:y:xs) = x : sumsOf ((x+y) : xs)
 --   merge [1,1,6] [1,2]   ==> [1,1,1,2,6]
 
 merge :: [Int] -> [Int] -> [Int]
-merge [] [] = []
-merge [] (y:ys) = y : merge [] ys
-merge (x:xs) [] = x : merge xs []
+merge [] ys = ys
+merge xs [] = xs
 merge (x:xs) (y:ys)
   | x < y      = x : merge xs (y:ys)
   | otherwise  = y : merge (x:xs) ys
@@ -185,9 +183,10 @@ mymaximum bigger initial (x:xs)
 -- Use recursion and pattern matching. Do not use any library functions.
 
 map2 :: (a -> b -> c) -> [a] -> [b] -> [c]
-map2 f as [] = []
-map2 f [] bs = []
+--map2 f as [] = []
+--map2 f [] bs = []
 map2 f (a:as) (b:bs) = f a b : map2 f as bs
+map2 f  _     _      = []
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the function maybeMap, which works a bit like a

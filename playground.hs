@@ -1,4 +1,6 @@
+import qualified Data.Map as Map
 import Data.List
+
 readInt :: String -> Either String Int
 readInt "0" = Right 0
 readInt "1" = Right 1
@@ -84,3 +86,15 @@ isPair :: String -> Bool
 isPair xs
   | xs == "()" || xs == "[]" || xs == "{}" = True
   | otherwise                              = False
+
+
+
+map' g xs = foldr helper [] xs
+  where helper y ys = g y : ys
+
+
+--Map.fromList :: Ord k => [(k, a)] -> Map.Map k a
+
+--val = Map.fromList [("a", 1), ("b", 2)]
+
+val = Map.fromList (zip "abcdefghijklmnopqrstuvwxyz" [1..])
