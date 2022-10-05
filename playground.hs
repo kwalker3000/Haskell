@@ -98,3 +98,12 @@ map' g xs = foldr helper [] xs
 --val = Map.fromList [("a", 1), ("b", 2)]
 
 val = Map.fromList (zip "abcdefghijklmnopqrstuvwxyz" [1..])
+
+geometric k1 _ 1 = k1 
+geometric k1 r k = k1 + geometric (k1*r) r (k-1) 
+
+
+geometric' k1 r k = (k1 * (1-r^k))/(1-r)
+
+geometricTerm k1 _ 1 = k1
+geometricTerm k1 r k = geometricTerm (k1*r) r (k-1)

@@ -252,9 +252,6 @@ multiCompose :: [ (a -> a) ] -> a -> a
 multiCompose [] x = x
 multiCompose fs x = multiCompose (init fs) $ (last fs) x
 
--- init :: [a] -> [a]
--- last :: [a] -> a
--- fs :: ([a] -> a -> a)
 ------------------------------------------------------------------------------
 -- Ex 13: let's consider another way to compose multiple functions. Given
 -- some function f, a list of functions gs, and some value x, define
@@ -274,7 +271,9 @@ multiCompose fs x = multiCompose (init fs) $ (last fs) x
 --   multiApp id [head, (!!2), last] "axbxc" ==> ['a','b','c'] i.e. "abc"
 --   multiApp sum [head, (!!2), last] [1,9,2,9,3] ==> 6
 
-multiApp = todo
+multiApp :: ([b] -> c) -> [a -> b] -> a -> c
+--multiApp f [] x = []
+multiApp f gs x = f $ [(g x) | g <- gs ]
 
 --------------------------------------------------------
 -- 14: in this exercise you get to implement an interpreter for a
@@ -308,17 +307,27 @@ multiApp = todo
 -- using (:). If you build the list in an argument to a helper
 -- function, the surprise won't work.
 
-interpreter :: [String] -> [String]
-interpreter commands = interpreter' commands 0 0
+-- interpreter :: [String] -> [String]
+-- interpreter commands = interpreter' commands 0 0
 
-interpreter' :: [String] -> Integer -> Integer -> [String]
-interpreter'  [] x y = [] 
-interpreter' ("printX" : cs) x y = show x : interpreter' cs x y
-interpreter' ("printY" : cs) x y = show y : interpreter' cs x y
-interpreter' (c : cs) x y
-  | c == "right"  = interpreter' cs (x+1) y
-  | c == "left"   = interpreter' cs (x-1) y
-  | c == "up"     = interpreter' cs x (y+1)
-  | c == "down"   = interpreter' cs x (y-1)
-  | otherwise     = interpreter' cs x y
+-- interpreter' :: [String] -> Integer -> Integer -> [String]
+-- interpreter'  [] x y = [] 
+-- interpreter' ("printX" : cs) x y = show x : interpreter' cs x y
+-- interpreter' ("printY" : cs) x y = show y : interpreter' cs x y
+-- interpreter' (c : cs) x y
+--   | c == "right"  = interpreter' cs (x+1) y
+--   | c == "left"   = interpreter' cs (x-1) y
+--   | c == "up"     = interpreter' cs x (y+1)
+--   | c == "down"   = interpreter' cs x (y-1)
+--   | otherwise     = interpreter' cs x y
   
+interpreter :: [String] -> [String]
+interpreter commands = go 0 0 commands
+  where go x y ("up":commands) = go x (y+1) commands
+        go x y ("down":commands) = go x (y-1) commands
+        go x y ("left":commands) = go (x-1) y commands
+        go x y ("right":commands) = go (x+1) y commands
+        go x y ("printX":commands) = show x : go x y commands
+        go x y ("printY":commands) = show y : go x y commands
+        go x y []                  = []
+        go x y (_:commands)        = "BAD" : go x y commands

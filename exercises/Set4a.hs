@@ -99,7 +99,12 @@ rangeOf xs = (maximum xs) - (minimum xs)
 --   longest [[1,2,3],[4,5],[6]] ==> [1,2,3]
 --   longest ["bcd","def","ab"] ==> "bcd"
 
-longest = todo
+longest :: Ord a => [[a]] -> [a]
+longest [x] = x
+longest (x:y:xs)
+  | length x > length y   = longest (x:xs)
+  | length x == length y  = longest ((min x y):xs)
+  | otherwise             = longest (y:xs)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Implement the function incrementKey, that takes a list of
@@ -153,7 +158,10 @@ average xs = (sum xs) / fromIntegral (length xs)
 --     ==> "Lisa"
 
 winner :: Map.Map String Int -> String -> String -> String
-winner scores player1 player2 = todo
+winner scores player1 player2
+  | Map.findWithDefault 0 player1 scores >= Map.findWithDefault 0 player2 scores = player1
+  | otherwise = player2
+
 
 ------------------------------------------------------------------------------
 -- Ex 9: compute how many times each value in the list occurs. Return
@@ -168,8 +176,11 @@ winner scores player1 player2 = todo
 --     ==> Map.fromList [(False,3),(True,1)]
 
 freqs :: (Eq a, Ord a) => [a] -> Map.Map a Int
-freqs xs = todo
-
+freqs [] = Map.fromList []
+freqs zs = Map.fromList $ freqs' $ (group . sort) zs
+freqs' (x:xs)
+    | xs == []  = [(head x, length x)]
+    | otherwise = (head x, length x) : freqs' xs 
 ------------------------------------------------------------------------------
 -- Ex 10: recall the withdraw example from the course material. Write a
 -- similar function, transfer, that transfers money from one account
@@ -195,9 +206,23 @@ freqs xs = todo
 --   transfer "Lisa" "Mike" 20 bank
 --     ==> fromList [("Bob",100),("Mike",50)]
 
+-- key key amount Map
 transfer :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
-transfer from to amount bank = todo
+transfer from to amount bank
+  | isValid from to amount bank   = Map.adjust (+amount) to (Map.adjust (subtract amount) from bank) 
+  | otherwise                     = bank
 
+
+isValid from to amount bank = (isAccount from bank && isAccount to bank) && hasFunds from amount bank
+
+isAccount :: String -> Map.Map String Int -> Bool
+isAccount key map = Map.member key map
+
+hasFunds :: String -> Int -> Map.Map String Int -> Bool
+hasFunds account amount bank = case Map.lookup account bank of
+                                 Just balance -> amount >= 0 && (balance - amount) >= 0
+                                 Nothing      -> False
+  
 ------------------------------------------------------------------------------
 -- Ex 11: given an Array and two indices, swap the elements in the indices.
 --
@@ -206,7 +231,7 @@ transfer from to amount bank = todo
 --         ==> array (1,4) [(1,"one"),(2,"three"),(3,"two"),(4,"four")]
 
 swap :: Ix i => i -> i -> Array i a -> Array i a
-swap i j arr = todo
+swap i j arr = arr // [(i, (arr ! j)), (j, (arr ! i))]
 
 ------------------------------------------------------------------------------
 -- Ex 12: given an Array, find the index of the largest element. You
@@ -217,4 +242,10 @@ swap i j arr = todo
 -- Hint: check out Data.Array.indices or Data.Array.assocs
 
 maxIndex :: (Ix i, Ord a) => Array i a -> i
-maxIndex = todo
+maxIndex arr = maxIndex' (indices arr) arr
+
+maxIndex' :: (Ix i, Ord a) => [i] -> Array i a -> i
+maxIndex' (x:[]) arr = x
+maxIndex' (x:y:zs) arr
+  | (arr ! x) >= (arr ! y) = maxIndex' (x:zs) arr
+  | otherwise              = maxIndex' (y:zs) arr
