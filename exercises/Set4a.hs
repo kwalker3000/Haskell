@@ -159,8 +159,9 @@ average xs = (sum xs) / fromIntegral (length xs)
 
 winner :: Map.Map String Int -> String -> String -> String
 winner scores player1 player2
-  | Map.findWithDefault 0 player1 scores >= Map.findWithDefault 0 player2 scores = player1
+  | score player1 >= score player2 = player1
   | otherwise = player2
+  where score p = Map.findWithDefault 0 p scores
 
 
 ------------------------------------------------------------------------------
@@ -181,6 +182,11 @@ freqs zs = Map.fromList $ freqs' $ (group . sort) zs
 freqs' (x:xs)
     | xs == []  = [(head x, length x)]
     | otherwise = (head x, length x) : freqs' xs 
+
+-- Challenge Answer:
+freqs'' :: (Eq a, Ord a) => [a] -> Map.Map a Int
+freqs''    = foldr (Map.alter $ Just . maybe 1 (+1)) Map.empty
+
 ------------------------------------------------------------------------------
 -- Ex 10: recall the withdraw example from the course material. Write a
 -- similar function, transfer, that transfers money from one account
@@ -222,6 +228,14 @@ hasFunds :: String -> Int -> Map.Map String Int -> Bool
 hasFunds account amount bank = case Map.lookup account bank of
                                  Just balance -> amount >= 0 && (balance - amount) >= 0
                                  Nothing      -> False
+
+transfer' :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
+transfer' from to amount bank =
+  case (Map.lookup from bank, Map.lookup to bank) of
+    (Just fromBalance, Just toBalance)
+      | amount >= 0 && fromBalance >= amount ->
+          Map.adjust (+amount) to (Map.adjust (\x -> x-amount) from bank)
+    _ -> bank
   
 ------------------------------------------------------------------------------
 -- Ex 11: given an Array and two indices, swap the elements in the indices.
@@ -231,7 +245,7 @@ hasFunds account amount bank = case Map.lookup account bank of
 --         ==> array (1,4) [(1,"one"),(2,"three"),(3,"two"),(4,"four")]
 
 swap :: Ix i => i -> i -> Array i a -> Array i a
-swap i j arr = arr // [(i, (arr ! j)), (j, (arr ! i))]
+swap i j arr = arr // [(i, arr ! j), (j, arr ! i)]
 
 ------------------------------------------------------------------------------
 -- Ex 12: given an Array, find the index of the largest element. You
@@ -249,3 +263,6 @@ maxIndex' (x:[]) arr = x
 maxIndex' (x:y:zs) arr
   | (arr ! x) >= (arr ! y) = maxIndex' (x:zs) arr
   | otherwise              = maxIndex' (y:zs) arr
+
+maxIndex'' arr = index
+  where (index, _) = maximumBy (\(_,x) (_,y) -> compare x y) (assocs arr)
