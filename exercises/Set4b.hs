@@ -98,6 +98,7 @@ largestHelper curr (x:xs)
   | curr > x   = curr : []
   | otherwise  = x : xs
 
+--largestHelper :: Ord a => a -> [a] -> [a]
 ------------------------------------------------------------------------------
 -- Ex 6: get the first element of a list with a fold. Define
 -- headHelper so that the given definition of myHead works.
@@ -111,10 +112,8 @@ largestHelper curr (x:xs)
 myHead :: [a] -> Maybe a
 myHead xs = foldr headHelper Nothing xs
 
-headHelper :: a -> Maybe a -> Maybe a
-headHelper [] Nothing = Nothing
-headHelper curr (Just x) = Just x  
-headHelper curr Nothing = Just curr
+headHelper :: a -> p -> Maybe a 
+headHelper curr _   = Just curr
 
 ------------------------------------------------------------------------------
 -- Ex 7: get the last element of a list with a fold. Define lasthelper
@@ -130,4 +129,13 @@ myLast :: [a] -> Maybe a
 myLast xs = foldr lastHelper Nothing xs
 
 lastHelper = todo
+ -- myFoldl f z xs = foldr step id xs z
+ --    where step x g a = g (f a x)
 
+-- myFoldl'''' :: (a -> b -> a) -> a -> [b] -> a
+-- myFoldl'''' f z xs = foldr f' id xs z
+--   where f' x k y  = k (f y x)
+
+-- myFoldl''''' :: (a -> b -> a) -> a -> [b] -> a
+-- myFoldl''''' f z xs = foldr f' id xs z
+--   where f' x k = \y -> k (f y x)
