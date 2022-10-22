@@ -211,7 +211,19 @@ data Color = Red | Green | Blue | Mix Color Color | Invert Color
   deriving Show
 
 rgb :: Color -> [Double]
-rgb col = todo
+rgb Red = [1, 0, 0]
+rgb Green = [0, 1, 0]
+rgb Blue = [0, 0, 1]
+rgb (Mix color1 color2) = [(x+y)/2 | (x,y) <- zip (rgb color1) (rgb color2) ]
+-- rgb (Invert color) = [fromIntegral (mod ((round x)+1) 2) | x <- (rgb color)]
+rgb (Invert color) = [abs (x-1) | x <- (rgb color)]
+  -- where color = rgb color
+-- mod (x+1) 2: mod (y+1) 2: mod (z+1) 2
+  -- | Red  = [1, 0, 0]
+  -- | Blue  = [0, 1, 0]
+  -- | Green  = [0, 0, 1]
+  -- | otherwise = [0.
+  -- 5, 0.5, 1]
 
 ------------------------------------------------------------------------------
 -- Ex 9: define a parameterized datatype OneOrTwo that contains one or
