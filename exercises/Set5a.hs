@@ -215,15 +215,7 @@ rgb Red = [1, 0, 0]
 rgb Green = [0, 1, 0]
 rgb Blue = [0, 0, 1]
 rgb (Mix color1 color2) = [(x+y)/2 | (x,y) <- zip (rgb color1) (rgb color2) ]
--- rgb (Invert color) = [fromIntegral (mod ((round x)+1) 2) | x <- (rgb color)]
 rgb (Invert color) = [abs (x-1) | x <- (rgb color)]
-  -- where color = rgb color
--- mod (x+1) 2: mod (y+1) 2: mod (z+1) 2
-  -- | Red  = [1, 0, 0]
-  -- | Blue  = [0, 1, 0]
-  -- | Green  = [0, 0, 1]
-  -- | otherwise = [0.
-  -- 5, 0.5, 1]
 
 ------------------------------------------------------------------------------
 -- Ex 9: define a parameterized datatype OneOrTwo that contains one or
@@ -281,10 +273,16 @@ data Nat = Zero | PlusOne Nat
   deriving (Show,Eq)
 
 fromNat :: Nat -> Int
-fromNat n = todo
+fromNat Zero = 0
+fromNat (PlusOne nat) = 1 + fromNat nat
 
 toNat :: Int -> Maybe Nat
-toNat z = todo
+toNat = todo
+-- toNat 0 = Just Zero
+-- toNat _ = Nothing
+-- toNat z
+--   | z < 0        = Nothing
+--   | otherwise    = Just (PlusOne (Just (toNat (z-1))))
 
 ------------------------------------------------------------------------------
 -- Ex 12: While pleasingly simple in its definition, the Nat datatype is not
@@ -344,10 +342,22 @@ inc (O b) = I b
 inc (I b) = O (inc b)
 
 prettyPrint :: Bin -> String
-prettyPrint = todo
+prettyPrint End = ""
+prettyPrint (I bin) = "1" ++ (prettyPrint bin)
+prettyPrint (O bin) = "0" ++ (prettyPrint bin)
 
 fromBin :: Bin -> Int
 fromBin = todo
+-- fromBin End = 2^0
+-- fromBin (I bin) = 2 * (fromBin bin) + (fromBin bin)  
+-- fromBin (O bin) = (fromBin bin)
 
+
+-- fromBin (Bin) = go (Bin) 0   
+
+-- go End pow = 1
+-- go (I bin) pow = 2^(go bin (pow+1)) 
+-- go (O bin) pow = (go bin (pow+1))
+  
 toBin :: Int -> Bin
 toBin = todo
