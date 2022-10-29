@@ -55,7 +55,10 @@ treeMax (Node el left right)
 --   allValues (>0) (Node 1 Empty (Node 0 Empty Empty))  ==>  False
 
 allValues :: (a -> Bool) -> Tree a -> Bool
-allValues condition tree = todo
+allValues _ Empty = True
+allValues condition (Node el left right) 
+  | condition el   = (allValues condition left) && (allValues condition right)
+  | otherwise      = False
 
 ------------------------------------------------------------------------------
 -- Ex 5: implement map for trees.
@@ -67,7 +70,8 @@ allValues condition tree = todo
 --   ==> (Node 2 (Node 3 Empty Empty) (Node 4 Empty Empty))
 
 mapTree :: (a -> b) -> Tree a -> Tree b
-mapTree f t = todo
+mapTree _ Empty = Empty
+mapTree f (Node val left right) = Node (f val) (mapTree f left) (mapTree f right)
 
 ------------------------------------------------------------------------------
 -- Ex 6: given a value and a tree, build a new tree that is the same,
@@ -111,7 +115,10 @@ mapTree f t = todo
 --                 (Node 3 Empty Empty))
 
 cull :: Eq a => a -> Tree a -> Tree a
-cull val tree = todo
+cull _ Empty = Empty
+cull node (Node val left right)
+  | node == val   = Empty
+  | otherwise     = Node val (cull node left) (cull node right)
 
 ------------------------------------------------------------------------------
 -- Ex 7: check if a tree is ordered. A tree is ordered if:
@@ -153,7 +160,11 @@ cull val tree = todo
 --                     (Node 3 Empty Empty))   ==>   True
 
 isOrdered :: Ord a => Tree a -> Bool
-isOrdered = todo
+-- isOrdered = todo
+isOrdered Empty = True
+isOrdered (Node val left right)
+  | (allValues (<val) left) && (allValues (>val) right) = isOrdered left && isOrdered right
+  | otherwise                   = False
 
 ------------------------------------------------------------------------------
 -- Ex 8: a path in a tree can be represented as a list of steps that
