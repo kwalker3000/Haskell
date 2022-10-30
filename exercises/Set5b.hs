@@ -183,7 +183,13 @@ data Step = StepL | StepR
 --   walk [StepL,StepL] (Node 1 (Node 2 Empty Empty) Empty)  ==>  Nothing
 
 walk :: [Step] -> Tree a -> Maybe a
-walk = todo
+-- walk = todo
+walk [_] Empty = Nothing
+walk [_] (Node val Empty Empty) = Nothing
+walk [] (Node val left right) = Just val
+walk (step:steps) (Node val left right)
+  | step == StepL   = walk steps left
+  | otherwise       = walk steps right
 
 ------------------------------------------------------------------------------
 -- Ex 9: given a tree, a path and a value, set the value at the end of
@@ -204,7 +210,13 @@ walk = todo
 --   set [StepL,StepR] 1 (Node 0 Empty Empty)  ==>  (Node 0 Empty Empty)
 
 set :: [Step] -> a -> Tree a -> Tree a
-set path val tree = todo
+-- set path val tree = todo
+set  _  _ Empty                     = Empty
+set (_:_) _ (Node val Empty Empty)    = Node val Empty Empty
+set [] newVal (Node val left right) = Node newVal left right
+set (step:steps) newVal (Node val left right)
+  | step == StepL    = Node val (set steps newVal left) right
+  | otherwise        = Node val left (set steps newVal right)
 
 ------------------------------------------------------------------------------
 -- Ex 10: given a value and a tree, return a path that goes from the
@@ -221,3 +233,15 @@ set path val tree = todo
 
 search :: Eq a => a -> Tree a -> Maybe [Step]
 search = todo
+-- search target (Node val left right)
+--   | left == Empty && right == Empty && target /= val = Nothing
+--   | target == val                                    = Just []
+--   | otherwise                         = (search target left) ++ StepL
+--   | otherwise                         = drop
+--   -- | otherwise      = Just []
+
+-- getPath target (Node val left right) cPath
+--   | left == Empty && right == right == Empty && target /= val 
+--   | left /= Empty                     = (search target left) ++ StepL
+--   | otherwise                         = getPath target right (drop 1 cPath)
+  
