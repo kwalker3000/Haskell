@@ -232,16 +232,13 @@ set (step:steps) newVal (Node val left right)
 --                    (Node 5 Empty Empty))                     ==>  Just [StepL,StepR]
 
 search :: Eq a => a -> Tree a -> Maybe [Step]
+-- search :: Eq a => a -> Tree a -> [Step]
 search = todo
--- search target (Node val left right)
---   | left == Empty && right == Empty && target /= val = Nothing
---   | target == val                                    = Just []
---   | otherwise                         = (search target left) ++ StepL
---   | otherwise                         = drop
---   -- | otherwise      = Just []
+-- search target (Node val left right) = getPath target Node
+-- search target (Node val left right) = Just (getPath target (Node val left right) [])
 
--- getPath target (Node val left right) cPath
---   | left == Empty && right == right == Empty && target /= val 
---   | left /= Empty                     = (search target left) ++ StepL
---   | otherwise                         = getPath target right (drop 1 cPath)
+getPath target (Node val left right) cPath
+  | val == target                     = reverse cPath
+  | left == Empty && right == Empty && target /= val = []
+  | otherwise                          = getPath target left (StepL : cPath) ++ getPath target right (StepR : cPath)
   
