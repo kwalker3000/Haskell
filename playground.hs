@@ -107,3 +107,100 @@ geometric' k1 r k = (k1 * (1-r^k))/(1-r)
 
 geometricTerm k1 _ 1 = k1
 geometricTerm k1 r k = geometricTerm (k1*r) r (k-1)
+
+
+class Size a
+  where size :: a -> Int
+
+instance Size Int
+  where size x = abs x
+
+instance Size [a]
+  where size xs = length xs
+
+class BasicEq a where
+  isEqual :: a -> a -> Bool
+
+instance BasicEq Bool where
+  isEqual True True   = True
+  isEqual False False = True
+  isEqual _     _     = False
+
+class BasicEq2 a where
+  isEqual2    :: a -> a -> Bool
+  isNotEqual2 :: a -> a -> Bool
+
+class BasicEq3 a where
+  isEqual3 :: a -> a -> Bool
+  -- isEqual3 x y = not (isNotEqual3 x y)
+
+  isNotEqual3 :: a -> a -> Bool
+  isNotEqual3 x y = not (isEqual3 x y)
+
+-- class Eq' a where
+--   (==), (/=) :: a -> a -> Bool
+
+--     -- Minimal complete definition
+--     --      (==) or (/=)
+--   x /= y    =  not (x == y)
+--   x == y    =  not (x /= y)
+
+data Color = Red | Green | Blue
+  deriving Show
+
+instance BasicEq3 Color where
+  isEqual3  Red Red     = True
+  isEqual3  Green Green = True
+  isEqual3  Blue Blue   = True
+  isEqual3  _    _      = False
+
+
+-- instance Show Color where
+--   show Red    =  "Dark Red"
+
+go' = do
+  putStrLn "Please enter a Double"
+  inpStr <- getLine
+  let inpDouble = (read inpStr)::Double
+  putStrLn ("Twice " ++ show inpDouble ++ " is " ++ show (inpDouble * 2))
+
+main = do
+        putStrLn "Please enter a Double:"
+        inpStr <- getLine
+        let inpDouble = (read inpStr)::Double
+        putStrLn ("Twice " ++ show inpDouble ++ " is " ++ show (inpDouble * 2))
+
+type Car = String
+type Point = (Double, Double)
+
+myPos:: Double -> Point
+myPos x = (x, sin x)
+
+safeHead :: [a] -> Either String a
+safeHead [] = Left "I have no head."
+safeHead (x:_) = Right x
+
+data Person = Person String String String
+  deriving Show
+
+kevin = Person "kevin" "st. charles" "555-5555"
+
+getName :: Person -> String
+getName (Person name _ _) = name
+
+data Person' = Person' {name::String, location::String, number::String}
+  deriving Show
+
+bruce = Person' "bruce" "seattle" "235-3444"
+
+-- getName' :: Person' -> name
+-- getName' name = name 
+
+data Vector a = Vector a a a
+  deriving Show
+
+vplus :: (Num t) => Vector t -> Vector t -> Vector t
+vplus (Vector x1 y1 z1) (Vector x2 y2 z2) = Vector (x1+x2) (y1+y2) (z1+z2)
+
+vectMult :: (Num t) => Vector t -> t -> Vector t
+vectMult (Vector x1 y1 z1) mult = Vector (x1*mult) (y1*mult) (z1*mult)

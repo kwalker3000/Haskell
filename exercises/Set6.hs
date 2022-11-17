@@ -13,7 +13,10 @@ data Country = Finland | Switzerland | Norway
   deriving Show
 
 instance Eq Country where
-  (==) = todo
+  Finland     == Finland     = True
+  Switzerland == Switzerland = True
+  Norway      == Norway      = True
+  _           == _           = False
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement an Ord instance for Country so that
@@ -22,7 +25,19 @@ instance Eq Country where
 -- Remember minimal complete definitions!
 
 instance Ord Country where
-  compare = todo -- implement me?
+  -- compare x y | x == y   = EQ
+  --             | x <= y   = LT
+  --             |otherwise = GT
+
+  -- x <= y  = compare x y /= GT
+  -- x <  y  = compare x y == LT
+  -- x >= y  = compare x y /= LT
+  -- x >  y  = compare x y == GT
+
+  -- max x y | x <= y     = y
+  --         | otherwise  = x
+  -- min x y | x <= y     = x
+  --         | otherwise  = y
   (<=) = todo -- and me?
   min = todo -- and me?
   max = todo -- and me?
@@ -41,8 +56,11 @@ data Name = Name String
   deriving Show
 
 instance Eq Name where
-  (==) = todo
+  (==) (Name a) (Name b) = go a == go b
+  (/=) (Name a) (Name b) = False
 
+go ("")   = ""
+go (x:xs) = toLower x : go xs
 ------------------------------------------------------------------------------
 -- Ex 4: here is a list type parameterized over the type it contains.
 -- Implement an instance "Eq (List a)" that compares the lists element
@@ -55,8 +73,18 @@ data List a = Empty | LNode a (List a)
   deriving Show
 
 instance Eq a => Eq (List a) where
-  (==) = todo
+  (==)  Empty Empty = True
+  (==)  (LNode a left) (LNode b right) = a == b && go' left right
+  (==)  (LNode x left) Empty = False
+  (==)  Empty  (LNode x right) = False
 
+go' :: Eq a => List a -> List a -> Bool
+go' Empty Empty = True
+go'  Empty  (LNode a left) = False
+go' (LNode a left) Empty = False
+go' (LNode a left) (LNode b right)
+  | a == b     = go' left right
+  | otherwise  = False
 ------------------------------------------------------------------------------
 -- Ex 5: below you'll find two datatypes, Egg and Milk. Implement a
 -- type class Price, containing a function price. The price function
@@ -75,6 +103,15 @@ data Egg = ChickenEgg | ChocolateEgg
 data Milk = Milk Int -- amount in litres
   deriving Show
 
+class Price a where
+  price :: a -> Int
+
+instance Price Egg where
+  price ChickenEgg = 20
+  price ChocolateEgg = 30
+
+instance Price Milk where
+  price (Milk ml) = ml * 15
 
 ------------------------------------------------------------------------------
 -- Ex 6: define the necessary instance hierarchy in order to be able
@@ -85,6 +122,19 @@ data Milk = Milk Int -- amount in litres
 -- price [Just ChocolateEgg, Nothing, Just ChickenEgg]  ==> 50
 -- price [Nothing, Nothing, Just (Milk 1), Just (Milk 2)]  ==> 45
 
+instance Price (Maybe a) where
+  price Nothing = 0
+  price (Just a) = 30
+
+  -- price (Just ChocolateEgg) = 30
+
+-- instance Price (Maybe a) where
+--   price Nothing = 0
+--   price (Just (Milk)) = price Milk
+
+-- instance Price []
+
+-- instance Eq a => Eq (List a) where
 
 ------------------------------------------------------------------------------
 -- Ex 7: below you'll find the datatype Number, which is either an

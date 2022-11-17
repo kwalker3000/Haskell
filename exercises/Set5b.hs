@@ -231,14 +231,32 @@ set (step:steps) newVal (Node val left right)
 --                            (Node 1 Empty Empty))
 --                    (Node 5 Empty Empty))                     ==>  Just [StepL,StepR]
 
-search :: Eq a => a -> Tree a -> Maybe [Step]
+-- search :: Eq a => a -> Tree a -> Maybe [Step]
 -- search :: Eq a => a -> Tree a -> [Step]
+-- search target node = (getPath node)
 search = todo
 -- search target (Node val left right) = getPath target Node
 -- search target (Node val left right) = Just (getPath target (Node val left right) [])
 
-getPath target (Node val left right) cPath
-  | val == target                     = reverse cPath
-  | left == Empty && right == Empty && target /= val = []
-  | otherwise                          = getPath target left (StepL : cPath) ++ getPath target right (StepR : cPath)
+getPath :: Eq a => Tree a -> [[Step]]
+-- getPath target (Node val l r) cPath
+getPath Empty = []
+getPath (Node a l r)
+  -- | path == []    = [[a]]
+  -- | path == []    = [(a, [StepR])]
+  | path == []    = [[]]
+  | otherwise  = (StepL:) <$> path
+  -- | otherwise  = fmap (\p -> (a,[p])) path
+  -- | otherwise  = (StepR:) <$> path
+  -- | otherwise  = path
+  where path = (getPath l ++ getPath r)
+  -- where path = (StepL : (getPath l)) ++ (StepR : (getPath r))
+  -- where path = fmap (\xy -> )
+  -- where path = map (\x -> StepL) (getPath l):[] ++ map (\y -> StepR) (getPath r):[]
+                                                
   
+t1 = (Node 2 (Node 3 (Node 4 Empty Empty)(Node 1 Empty Empty))(Node 5 Empty Empty))
+
+t2 = (Node 2 (Node 4 Empty Empty) (Node 3 Empty Empty))
+
+t3 = (Node 2 (Node 1 Empty Empty) (Node 3 Empty Empty))
