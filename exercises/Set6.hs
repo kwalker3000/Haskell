@@ -25,22 +25,20 @@ instance Eq Country where
 -- Remember minimal complete definitions!
 
 instance Ord Country where
-  -- compare x y | x == y   = EQ
-  --             | x <= y   = LT
-  --             |otherwise = GT
+  compare Finland Finland = EQ
+  compare Norway Norway = EQ
+  compare Switzerland Switzerland = EQ
+  compare Finland _ = LT
+  compare Switzerland  _ = GT
+  compare Norway Finland = GT
+  compare Norway Switzerland = LT
 
-  -- x <= y  = compare x y /= GT
-  -- x <  y  = compare x y == LT
-  -- x >= y  = compare x y /= LT
-  -- x >  y  = compare x y == GT
-
-  -- max x y | x <= y     = y
-  --         | otherwise  = x
-  -- min x y | x <= y     = x
-  --         | otherwise  = y
-  (<=) = todo -- and me?
-  min = todo -- and me?
-  max = todo -- and me?
+  (<=) _ _      = True
+  (>=) _ _      = True
+  min x y | x < y    = x
+          | otherwise = y
+  max x y | x < y    = y
+          | otherwise = x
 
 ------------------------------------------------------------------------------
 -- Ex 3: Implement an Eq instance for the type Name which contains a String.
@@ -59,7 +57,7 @@ instance Eq Name where
   (==) (Name a) (Name b) = go a == go b
   (/=) (Name a) (Name b) = False
 
-go ("")   = ""
+go ""   = ""
 go (x:xs) = toLower x : go xs
 ------------------------------------------------------------------------------
 -- Ex 4: here is a list type parameterized over the type it contains.
@@ -122,19 +120,16 @@ instance Price Milk where
 -- price [Just ChocolateEgg, Nothing, Just ChickenEgg]  ==> 50
 -- price [Nothing, Nothing, Just (Milk 1), Just (Milk 2)]  ==> 45
 
-instance Price (Maybe a) where
+instance Price a => Price (Maybe a) where
   price Nothing = 0
-  price (Just a) = 30
+  price (Just item) = price item
 
-  -- price (Just ChocolateEgg) = 30
+instance Price a => Price [a] where
+  price [] = 0
+  price xs = getPrice xs
 
--- instance Price (Maybe a) where
---   price Nothing = 0
---   price (Just (Milk)) = price Milk
-
--- instance Price []
-
--- instance Eq a => Eq (List a) where
+getPrice [] = 0
+getPrice (x:xs) = price x + getPrice xs
 
 ------------------------------------------------------------------------------
 -- Ex 7: below you'll find the datatype Number, which is either an
@@ -146,6 +141,18 @@ instance Price (Maybe a) where
 data Number = Finite Integer | Infinite
   deriving (Show,Eq)
 
+instance Ord Number where
+  compare Infinite Infinite = EQ
+  compare Infinite _ = GT
+  compare (Finite _) Infinite = LT
+  compare (Finite x) (Finite y) = compare x y 
+
+  (>=) Infinite _ = True
+  (>=) (Finite _) Infinite = False
+  (>=) (Finite x) (Finite y) = x >= y
+  (<=) _ Infinite = True
+  (<=) Infinite (Finite _)= False
+  (<=) (Finite x) (Finite y) = x <= y
 
 ------------------------------------------------------------------------------
 -- Ex 8: rational numbers have a numerator and a denominator that are
