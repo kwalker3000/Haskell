@@ -178,7 +178,8 @@ data RationalNumber = RationalNumber Integer Integer
   deriving Show
 
 instance Eq RationalNumber where
-  p == q = todo
+  -- p == q = p/a == q/b
+  (RationalNumber k r) == (RationalNumber p q) = k*q == r*p 
 
 ------------------------------------------------------------------------------
 -- Ex 9: implement the function simplify, which simplifies rational a
@@ -198,7 +199,10 @@ instance Eq RationalNumber where
 -- Hint: Remember the function gcd?
 
 simplify :: RationalNumber -> RationalNumber
-simplify p = todo
+simplify (RationalNumber p q) = simplify' p q (gcd p q)
+
+simplify' :: Integer -> Integer -> Integer -> RationalNumber
+simplify' p q r = RationalNumber (div p r) (div q r)
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the typeclass Num for RationalNumber. The results
@@ -219,12 +223,15 @@ simplify p = todo
 --   signum (RationalNumber 0 2)             ==> RationalNumber 0 1
 
 instance Num RationalNumber where
-  p + q = todo
-  p * q = todo
-  abs q = todo
-  signum q = todo
-  fromInteger x = todo
-  negate q = todo
+  (+) (RationalNumber p1 q1) (RationalNumber p2 q2) = add' p1 q1 p2 q2
+  (*) (RationalNumber p1 q1) (RationalNumber p2 q2) = mult' p1 q1 p2 q2
+  abs (RationalNumber p1 q1) = RationalNumber (abs p1) (q1)
+  negate (RationalNumber p1 q1) = RationalNumber (negate p1) (q1)
+  signum (RationalNumber p1 q1) = RationalNumber (signum p1) (signum q1)
+  fromInteger n = RationalNumber n 1
+
+add' p1 q1 p2 q2 = simplify $ RationalNumber (p2*q1 + p1*q2) (q1*q2) 
+mult' p1 q1 p2 q2 = simplify $ RationalNumber (p1 * p2) (q1 *q2) 
 
 ------------------------------------------------------------------------------
 -- Ex 11: a class for adding things. Define a class Addable with a
@@ -239,6 +246,18 @@ instance Num RationalNumber where
 --   add [1,2] [3,4]        ==>  [1,2,3,4]
 --   add zero [True,False]  ==>  [True,False]
 
+
+class Addable a where
+  add :: a -> a -> a
+  zero :: a
+
+instance Addable Integer where
+  zero = 0
+  add m n = m + n
+  
+instance Addable [a] where
+  zero = []
+  add m n = m ++ n
 
 ------------------------------------------------------------------------------
 -- Ex 12: cycling. Implement a type class Cycle that contains a
@@ -269,4 +288,23 @@ data Color = Red | Green | Blue
   deriving (Show, Eq)
 data Suit = Club | Spade | Diamond | Heart
   deriving (Show, Eq)
+
+
+class Cycle a where
+  step :: a -> a
+  stepMany :: Int -> a -> a
+  stepMany nSteps a
+    | nSteps == 0   = a
+    | otherwise     = stepMany (nSteps-1) (step a) 
+
+instance Cycle Color where
+  step Red = Green
+  step Blue = Red
+  step Green = Blue
+
+instance Cycle Suit where
+  step Club = Spade
+  step Spade = Diamond
+  step Diamond = Heart
+  step Heart = Club
 
