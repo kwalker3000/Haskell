@@ -1,5 +1,6 @@
 import qualified Data.Map as Map
 import Data.List
+import Data.Ord
 
 readInt :: String -> Either String Int
 readInt "0" = Right 0
@@ -180,18 +181,18 @@ safeHead :: [a] -> Either String a
 safeHead [] = Left "I have no head."
 safeHead (x:_) = Right x
 
-data Person = Person String String String
-  deriving Show
+-- data Person = Person String String String
+--   deriving Show
 
-kevin = Person "kevin" "st. charles" "555-5555"
+-- kevin = Person "kevin" "st. charles" "555-5555"
 
-getName :: Person -> String
-getName (Person name _ _) = name
+-- getName :: Person -> String
+-- getName (Person name _ _) = name
 
-data Person' = Person' {name::String, location::String, number::String}
-  deriving Show
+-- data Person' = Person' {name::String, location::String, number::String}
+--   deriving Show
 
-bruce = Person' "bruce" "seattle" "235-3444"
+-- bruce = Person' "bruce" "seattle" "235-3444"
 
 -- getName' :: Person' -> name
 -- getName' name = name 
@@ -204,3 +205,35 @@ vplus (Vector x1 y1 z1) (Vector x2 y2 z2) = Vector (x1+x2) (y1+y2) (z1+z2)
 
 vectMult :: (Num t) => Vector t -> t -> Vector t
 vectMult (Vector x1 y1 z1) mult = Vector (x1*mult) (y1*mult) (z1*mult)
+
+data Money = Money Int
+  deriving Show
+
+renderMoney :: Money -> String
+renderMoney (Money cents) = show (fromIntegral cents / 100)
+
+(+!) :: Money -> Money -> Money
+(Money a) +! (Money b) = Money (a+b)
+
+scale :: Money -> Double -> Money
+scale (Money a) x = Money (round (fromIntegral a * x))
+
+addVat :: Money -> Money
+addVat m = m +! scale m 0.24
+
+-- Declared also above ln154
+data Person = Person {name :: String, age :: Int}
+  deriving Show
+
+data SortOrder = Ascending | Descending
+data SortField = Name | Age
+
+sortByField :: SortField -> [Person] -> [Person]
+sortByField Name ps = sortBy (comparing name) ps
+sortByField Age ps = sortBy (comparing age) ps
+
+sortPersons :: SortField -> SortOrder -> [Person] -> [Person]
+sortPersons field Ascending ps = sortByField field ps
+sortPersons field Descending ps = reverse (sortByField field ps)
+
+persons = [Person "Fridolf" 73, Person "Greta" 60, Person "John" 58]
