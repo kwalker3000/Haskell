@@ -237,3 +237,14 @@ sortPersons field Ascending ps = sortByField field ps
 sortPersons field Descending ps = reverse (sortByField field ps)
 
 persons = [Person "Fridolf" 73, Person "Greta" 60, Person "John" 58]
+
+printTwoThings :: IO ()
+printTwoThings = do
+  putStrLn "Hello"
+  putStrLn "How are you?"
+
+greet :: IO ()
+greet = do
+  putStrLn "What's your name?"
+  name <- getLine
+  putStrLn ("Hello, " ++ name)
